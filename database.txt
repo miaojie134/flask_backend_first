@@ -1,0 +1,9 @@
+数据迁移
+
+export FLASK_APP=main.py
+
+flask shell
+
+db
+
+db.create_all()
