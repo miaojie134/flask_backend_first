@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from auth import auth_ns
 from recipes import recipe_ns
+from hello_world import hello_ns
 
 
 def create_app(config):
@@ -21,6 +22,7 @@ def create_app(config):
 
     api.add_namespace(auth_ns)
     api.add_namespace(recipe_ns)
+    api.add_namespace(hello_ns)
 
     @app.shell_context_processor
     def make_shell_context():
