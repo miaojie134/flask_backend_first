@@ -1,6 +1,6 @@
 from flask_restx import Resource, fields, Namespace
 from models import User
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
 
@@ -34,15 +34,14 @@ class SignUp(Resource):
         username = data.get("username")
         db_user = User.query.filter_by(username=username).first()
         if db_user is not None:
-            return jsonify({"message": f"User {username} already exists"})
-
+            return make_response(jsonify({"message": "User already exists."}), 400)
         new_user = User(
             username=data.get("username"),
             email=data.get("email"),
             password=generate_password_hash(data.get("password")),
         )
         new_user.save()
-        return jsonify({"message": "User created successfully"})
+        return make_response(jsonify({"message": "User created successfully."}), 201)
 
 
 @auth_ns.route("/login")
@@ -57,8 +56,9 @@ class Login(Resource):
         if db_user and check_password_hash(db_user.password, password):
             access_token = create_access_token(identity=username)
             refresh_token = create_refresh_token(identity=username)
-            return jsonify(
-                {"access_token": access_token, "refresh_token": refresh_token}
+            return make_response(
+                jsonify({"access_token": access_token, "refresh_token": refresh_token}),
+                200,
             )
 
-        return jsonify({"message": "Invalid username or password"})
+        return make_response(jsonify({"message": "Invalid credentials"}), 401)
