@@ -2,7 +2,12 @@ from flask_restx import Resource, fields, Namespace
 from models import User
 from flask import request, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+)
 
 auth_ns = Namespace("auth", description="Authentication related operations")
 
@@ -21,6 +26,13 @@ login_model = auth_ns.model(
     {
         "username": fields.String(required=True),
         "password": fields.String(required=True),
+    },
+)
+
+refresh_model = auth_ns.model(
+    "Refresh",
+    {
+        "refresh_token": fields.String(required=True),
     },
 )
 
@@ -62,3 +74,17 @@ class Login(Resource):
             )
 
         return make_response(jsonify({"message": "Invalid credentials"}), 401)
+
+
+@auth_ns.route("/refresh")
+class Refresh(Resource):
+    # @auth_ns.expect(refresh_model)
+    @jwt_required(refresh=True)
+    def post(self):
+        """Refresh access token"""
+        current_user = get_jwt_identity()
+        access_token = create_access_token(identity=current_user)
+        return make_response(
+            jsonify({"access_token": access_token}),
+            200,
+        )

@@ -7,10 +7,12 @@ from flask_jwt_extended import JWTManager
 from auth import auth_ns
 from recipes import recipe_ns
 from hello_world import hello_ns
+from flask_cors import CORS
 
 
 def create_app(config):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(config)
 
     db.init_app(app)
