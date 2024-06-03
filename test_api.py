@@ -128,6 +128,11 @@ class APITestCase(unittest.TestCase):
         self.assertEqual(status_code, 200)
         self.assertEqual(json["title"], updated_recipe_data["title"])
         self.assertEqual(json["description"], updated_recipe_data["description"])
+        # 检查数据库中的数据是否更新
+        response = self.client.get(f"/recipe/recipes/{recipe_id}")
+        json = response.json
+        self.assertEqual(json["title"], updated_recipe_data["title"])
+        self.assertEqual(json["description"], updated_recipe_data["description"])
 
     def test_delete_recipe(self):
         """Test delete a recipe"""
@@ -148,6 +153,10 @@ class APITestCase(unittest.TestCase):
         )
         status_code = response.status_code
         self.assertEqual(status_code, 204)
+        # 检查数据库中的数据是否删除
+        response = self.client.get(f"/recipe/recipes/{recipe_id}")
+        status_code = response.status_code
+        self.assertEqual(status_code, 404)
 
     def tearDown(self):
         with self.app.app_context():
