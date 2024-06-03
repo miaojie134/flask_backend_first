@@ -16,7 +16,7 @@ recipe_model = recipe_ns.model(
 )
 
 
-@recipe_ns.route("/")
+@recipe_ns.route("/recipes")
 class RecipesResource(Resource):
     @recipe_ns.marshal_list_with(recipe_model)
     def get(self):
@@ -37,7 +37,7 @@ class RecipesResource(Resource):
         return new_recipe, 201
 
 
-@recipe_ns.route("/<int:recipe_id>")
+@recipe_ns.route("/recipes/<int:recipe_id>")
 class RecipeResource(Resource):
     @recipe_ns.marshal_with(recipe_model)
     def get(self, recipe_id):
@@ -60,4 +60,4 @@ class RecipeResource(Resource):
         """Delete a recipe by ID"""
         recipe_to_delete = Recipe.query.get_or_404(recipe_id)
         recipe_to_delete.delete()
-        return recipe_to_delete, 200
+        return recipe_to_delete, 204
